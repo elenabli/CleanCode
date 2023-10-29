@@ -1,0 +1,34 @@
+
+
+def is_teacher(user):
+    return user[3] == 'teacher'
+
+
+@app.route('/create_exercise', methods=['GET', 'POST'])
+def create_exercise_route():
+    error = None
+
+    if request.method != 'POST':
+        return render_template('exercise_create.html', error=error)
+
+    users.check_csrf()
+    student_name = request.form.get('name')
+    added_tasks = request.form.get('tasks')
+
+    if not user_name or not added_tasks:
+        error = "Both name and tasks are required"
+        return render_template('exercise_create.html', error=error)
+
+    user = users.get_user_by_github_handle(session['github_handle'])
+
+    if not user and not is_teacher(user):
+        return redirect(url_for('index_route'))
+
+    creator_id = user[0]
+    try:
+        exercises.create_exercise(student_name, added_tasks, creator_id)
+        return redirect(url_for('index_route'))
+    except Exception as e:
+        error = f"Error occurred: {str(e)}"
+
+    return render_template('exercise_create.html', error=error)
