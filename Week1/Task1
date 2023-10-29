@@ -12,7 +12,7 @@ def create_exercise_route():
         return render_template('exercise_create.html', error=error)
 
     users.check_csrf()
-    student_name = request.form.get('name')
+    user_name = request.form.get('name')
     added_tasks = request.form.get('tasks')
 
     if not user_name or not added_tasks:
@@ -26,7 +26,7 @@ def create_exercise_route():
 
     creator_id = user[0]
     try:
-        exercises.create_exercise(student_name, added_tasks, creator_id)
+        exercises.create_exercise(user_name, added_tasks, creator_id)
         return redirect(url_for('index_route'))
     except Exception as e:
         error = f"Error occurred: {str(e)}"
